@@ -1,11 +1,16 @@
 function novaLista(){   									//CRIA UM OBJETO LISTA
 	let elemento=null;										//RESERVA O ELEMENTO PRINCIPAL(TOPO)
-	let length=0;											//GUARDA O TAMANHO DA LISTA
+	length;													//GUARDA O TAMANHO DA LISTA
 	lastNode=null;											//GUARDA O ULTIMO ELEMENTO INSERIDO
 
 	
 	const novoJogador = (nome,posicao)=>{					//CRIA UM OBJETO NODE
+		var _nextNode;										//CRIA UMA VARIAVEL INTERNA NA CLASSE
+		var _previousNode;									//CRIA UMA VARIAVEL INTERNA NA CLASSE
+
 		return{
+			nextNode:_nextNode,								//PROPRIEDADE PROXIMO JOGADOR
+			previousNode:_previousNode,						//PROPRIEDADE ANTERIOR JOGADOR
 			strNome:nome,									//PROPRIEDADE (NOME) DO OBJETO JOGADOR
 			intPosicao:posicao,								//PROPRIEDADE (INDICE) DO OBJETO JOGADOR
 			mostrar:() =>mostrar_jogador(posicao, nome),	//METODO PARA MOSTRAR O JOGADOR
@@ -15,18 +20,21 @@ function novaLista(){   									//CRIA UM OBJETO LISTA
 
 	const add = (value) =>{									//METODO PARA INSERIR ADICIONAR JOGADOR NA LISTA
 		if(!elemento){               						//CASO O ELEMENTO ESTEJA VAZIO
-			elemento = novoJogador(value,length);			//CRIO UM NOVO OBJETO JOGADOR
+			elemento = novoJogador(value,length);		    //CRIO UM NOVO OBJETO JOGADOR
 			length++;			 							//INCREMENTO O TAMANHO DA LISTA
 			elemento.nextNode=elemento;						//DEFINE O PROXIMO ELEMENTO COMO O ELEMENTO PRINCIPAL FAZENDO CIRCULAR
+			elemento.previousNode=elemento;					//DEFINE O ANTERIOIR ELEMENTO COMO O ELEMENTO PRINCIPAL FAZENDO CIRCULAR
 			lastNode = elemento;							//GUARDA O ULTIMO ELEMENTO
 			return elemento;         						//RETORNO PARA A FUNCAO O NOVO ELEMENTO CRIADO
 		}		
 
-		let novonode = novoJogador(value,length);			//CRIO UM NOVO JOGADOR E DOU O TAMANHO DA LISTA COMO SEU INDICE
+		novonode = novoJogador(value,length);			//CRIO UM NOVO JOGADOR E DOU O TAMANHO DA LISTA COMO SEU INDICE
+		novonode.nextNode = elemento;				//DEFINO O PROXIMO JOGADOR DO NOJO JOGADOR
+		novonode.previousNode =  elemento.previousNode; 					//DEFINO O JOGADOR ANTERIOR DO NOVO JOGADOR
+		elemento.previousNode.nextNode = novonode;						//DEFINO O ULTIMO JOGADOR ADICIONADO
+		elemento.previousNode = novonode;								//DEFINO O JOGADOR ATUAL COMO O NOVO JOGADOR
+		//elemento=novonode;
 		length++;											//INCREMENTO O TAMANHO DA LISTA
-		lastNode.nextNode=novonode;							//DIRECIONO O NOVO JOGADOR PARA O PROXIMO JOGADOR DO ULTIMIO INSERIDO
-		novonode.nextNode = elemento;						//DIRECIONO O PRIMEIRO JOGADOR PARA O PROXIMO JOGADOR DO NOVO JOGADOR (CIRCULAR)
-		lastNode=novonode;									//PASSO O JOGADOR CRIADO PARA O ULTIMO JOGADOR CRIADO
 		return novonode; 									//RETORNO PARA A FUNCAO O NOVO ELEMENTO
 	}
 	
@@ -39,19 +47,16 @@ function novaLista(){   									//CRIA UM OBJETO LISTA
 			elemento = node.nextNode;						//O JOGADOR INICIAL SE TORNA O PROXIMO JOGADOR DO JOGADOR A SER EXCLUIDO
 		}
 
-		let temp = elemento;								//PASSO O JOGADOR ATUAL PARA UM LOCAL TEMPORARIO
-		while (temp.nextNode && temp.nextNode !== node){	//ENQUANTO O PROXIMO JOGADOR DO JOGADOR TEMPORARIO FOR DIFERENTE DO JOGADOR A SER EXCLUIDO
-			temp = temp.nextNode;							//PASSO O PROXIMO JOGADOR DO JOGADOR TEMPORARIO PARA O TEMPORARIO (ANDO PRA FRENTE)
-		}
-
-		if(node.nextNode){									//SE EXISTIR O PROXIMO JOGADOR DO JOGADOR A SER EXCLUIDO
-			temp.nextNode = node.nextNode; 					//O PROXIMO JOGADOR DO JOGADOR TEMPORARIO PASSA A SER O PROXIMO JOGADOR DO JOGADOR A SER EXCLUIDO
-			length --;										//DIMINUO O TAMANHO DA LISTA
-			return true;									//RETORNO SUCESSO NA EXCLUSAO
+		if (node.nextNode != node){
+			node.previousNode.nextNode = node.nextNode;
+			node.nextNode.previousNode = node.previousNode;
+			length --;
+			return true;
 		}
 		else{
-			return false	
-		};
+			return false;
+		}
+		;
 	}
 
 	const getByValue = (value) =>{							//RETORNA O JOGADOR PELO NOME INFORMADO
