@@ -7,12 +7,13 @@ function novaLista(){   									//CRIA UM OBJETO LISTA
 	const novoJogador = (nome,posicao)=>{					//CRIA UM OBJETO NODE
 		var _nextNode;										//CRIA UMA VARIAVEL INTERNA NA CLASSE
 		var _previousNode;									//CRIA UMA VARIAVEL INTERNA NA CLASSE
-
+		var _imune;
 		return{
 			nextNode:_nextNode,								//PROPRIEDADE PROXIMO JOGADOR
 			previousNode:_previousNode,						//PROPRIEDADE ANTERIOR JOGADOR
 			strNome:nome,									//PROPRIEDADE (NOME) DO OBJETO JOGADOR
 			intPosicao:posicao,								//PROPRIEDADE (INDICE) DO OBJETO JOGADOR
+			imune:_imune,
 			mostrar:() =>mostrar_jogador(posicao, nome),	//METODO PARA MOSTRAR O JOGADOR
 			ocultar:() =>ocultar_jogador(posicao)			//METODO PARA ESCONDER O JOGADOR
 		}

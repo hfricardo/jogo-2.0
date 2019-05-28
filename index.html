@@ -55,21 +55,25 @@
 		//		ESCOLHE A CARTA		//
 		async function escolhe(){
 			if (lista.length()>1){													//		VERIFICA SE EXISTE MAIS DE UM JOGADOR
-				var cartas = "1,3,9,12"												//		DEFINE AS CARTAS VALIDAS DO JOGO
+				var cartas = "1,3,7,9,12"												//		DEFINE AS CARTAS VALIDAS DO JOGO
 				var carta =cartas.split(",")[aleatorio()];		//		ESCOLHE UMA CARTA ALEATORIA			
 
 				//************* SEGUE PARA A CARTA ESCOLHIDA ************ //
 				switch (carta){
-					case "1": 												//Pula o próximo jogador e passa a vez para o seguinte.
-						mostra_carta(1);								//INTERFACE EXIBE A CARTA ESCOLHIDA
+					case "1": 												
+						mostra_carta(1);								
 						await sleep(1000);
+						var terceiro;
+						jogador_atual.imune=true;
+						imune(jogador_atual.intPosicao)
 						if(sentido){
-							jogador_atual=jogador_atual.nextNode.nextNode;	//MOVE O JOGADOR ATUAL PARA O PROXIMO DA VEZ
+							jogador_atual= jogador_atual.nextNode;
 						}
-						else{
-							jogador_atual=jogador_atual.previousNode.previousNode;	//MOVE O JOGADOR ATUAL PARA O PROXIMO DA VEZ
+						else
+						{
+							jogador_atual= jogador_atual.previousNode;
 						}
-						
+
 
 					break;
 
@@ -86,10 +90,28 @@
 							jogador_atual= jogador_atual.previousNode;
 							terceiro = jogador_atual.previousNode;
 						}
-
-						if (lista.remove(terceiro)){
-								terceiro.ocultar();
+						if (terceiro.imune==true){
+							terceiro.imune=false;
+							sujeito(terceiro.intPosicao)
 						}
+						else{
+							if (lista.remove(terceiro)){
+									terceiro.ocultar();
+							}
+						}
+					break;
+					
+					case "7": 												//Pula o próximo jogador e passa a vez para o seguinte.
+						mostra_carta(7);								//INTERFACE EXIBE A CARTA ESCOLHIDA
+						await sleep(1000);
+						if(sentido){
+							jogador_atual=jogador_atual.nextNode.nextNode;	//MOVE O JOGADOR ATUAL PARA O PROXIMO DA VEZ
+						}
+						else{
+							jogador_atual=jogador_atual.previousNode.previousNode;	//MOVE O JOGADOR ATUAL PARA O PROXIMO DA VEZ
+						}
+						
+
 					break;
 					case "9"://Elimina o jogador anterior na roda. 
 						mostra_carta(9);								//INTERFACE EXIBE A CARTA ESCOLHIDA
@@ -103,8 +125,14 @@
 							anterior = jogador_atual.nextNode;					//CRIA UM ANTERIOR PARA PROCURAR QUEM E O PROXIMO
 							jogador_atual=jogador_atual.previousNode;		//MOVE O JOGADOR ATUAL PARA O PROXIMO DA VEZ
 						}
-						if (lista.remove(anterior)){					//REMOVE DA LISTA O NODE DO JOGADOR CUJO O PROXIMO É O ATUAL
-								anterior.ocultar();							//OCULTA O JOGADOR REMOVIDO DA INTERFACE
+						if (anterior.imune==true){
+							anterior.imune=false;
+							sujeito(anterior.intPosicao)
+						}
+						else{
+							if (lista.remove(anterior)){					//REMOVE DA LISTA O NODE DO JOGADOR CUJO O PROXIMO É O ATUAL
+									anterior.ocultar();							//OCULTA O JOGADOR REMOVIDO DA INTERFACE
+							}
 						}
 
 					break;
@@ -152,6 +180,7 @@
 			}
 			$("#carta1").hide();
 			$("#carta3").hide();
+			$("#carta7").hide();
 			$("#carta9").hide();
 			$("#carta12").hide();
 			$("#selecao" + id_jogador_atual).css({ fill: "#90b31899" });
@@ -169,9 +198,19 @@
 			$("#text" + posicao).hide(300);
 		}
 
+		function imune(posicao)
+		{
+			$("#jogador" + posicao).css({ stroke: "red" });
+		}
+
+		function sujeito(posicao)
+		{
+			$("#jogador" + posicao).css({ stroke: "none" });
+		}		
+
 		//		FUNCAO PARA CONTROLAR MEDIA DE REPETICOES DAS CARTAS ALEATORIAS		//
 		
-		var casa=[0,0,0,0]; //RESERVA CONTADORES PARA REGISTRAR QUANTAS VEZES A CARTA SAIU//
+		var casa=[0,0,0,0,0]; //RESERVA CONTADORES PARA REGISTRAR QUANTAS VEZES A CARTA SAIU//
 		function aleatorio()
 		{
 			var numero=0; 						//NUMERO QUE SERA O INDICE DAS CARTAS PERMITIDAS NO JOGO//
@@ -186,7 +225,7 @@
 			do												//FACO PRIMEIRO PARA DEPOIS DECIDIR SE SAIO OU FICO NO LOOP
 			{
 				numero=	Math.floor(Math.random() * 10);		//RECEBO UM NUMERO ALEATORIO DO RANDOM
-				if(numero<=3)								//SE O NUMERO ALEATORIO DO RANDOM FOR MENOR OU IGUAL AO INDICE MAXIMO DAS CARTAS
+				if(numero<=casa.length -1)								//SE O NUMERO ALEATORIO DO RANDOM FOR MENOR OU IGUAL AO INDICE MAXIMO DAS CARTAS
 				{
 					if(casa[numero]<menor + 1){				//SE O NUMERO DE VEZES DO INDICE FOR MENOR DO QUE O LIMITE DE DIFERENCA
 						flag=false;							//PERMITE A SAIDA DO LOOP
@@ -202,9 +241,26 @@
 	<div class="wrapper ">
 		<div class="container-fluid">
 	<div class="row">
-		<div class="col-sm-3">
-			<div class="btn btn-success"  onclick="demo.showSwal('novo_jogador');">Adiciona jogador</div>
-			<div class="btn btn-warning"  onclick="iniciar()">Iniciar jogo</div>
+		<div class="col-sm-4">
+			<div class="btn btn-success"  onclick="demo.showSwal('novo_jogador');">Adiciona jogador</div><br /> 
+			<div class="btn btn-warning"  onclick="iniciar()">Iniciar jogo</div><br />
+			<div style="border:1px solid gray; padding:5px; padding-left:0px; margin-top:20px; display:block;">
+				<ul>
+						
+						<li>3 - Elimina o 3o jogador, a partir do atual.</li>
+						<li>7 - Passa a vez para o  3o jogador, a partir do atual.</li>
+						<li>9 - Elimina o jogador que precede na mesa. </li>
+						<li>J - Inverte o sentido do jogo.</li>
+						<li>A - Torna jogador IMUNE.</li>
+				</ul>
+			</div><br />
+			<div style="border:1px solid gray; padding:5px; padding-left:0px; margin-top:20px; display:block;">
+				<h4>Como jogar:</h4>
+				<p> Clique em ADICIONAR JOGADOR para adicionar o jogador. Caso desejar inserir jogadores pre-definidos deixe com(-1) no campo de nome. Caso queria inserir os 10 jogadores individualmente só clicar em ADICIONAR JOGADOR a cada novo jogador.</p>
+				<p> Após inserido os 10 jogadores, clique em INICIAR JOGO.</p>
+				<p> Agora clique na carta ao centro da mesa. </P>
+					<P>O jogador atual será marcado na mesa em amarelo. O jogador que ficar imune será rodeado de vermelho.</p>
+			</div>
 		</div>
 		<div class="col-sm-8">
 			<div style="width:800px; height:400px;">
