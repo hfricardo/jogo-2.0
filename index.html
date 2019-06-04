@@ -55,7 +55,7 @@
 		//		ESCOLHE A CARTA		//
 		async function escolhe(){
 			if (lista.length()>1){													//		VERIFICA SE EXISTE MAIS DE UM JOGADOR
-				var cartas = "1,3,7,9,12"												//		DEFINE AS CARTAS VALIDAS DO JOGO
+				var cartas = "1,3,7,9,11"												//		DEFINE AS CARTAS VALIDAS DO JOGO
 				var carta =cartas.split(",")[aleatorio()];		//		ESCOLHE UMA CARTA ALEATORIA			
 
 				//************* SEGUE PARA A CARTA ESCOLHIDA ************ //
@@ -136,8 +136,8 @@
 						}
 
 					break;
-					case "12": //Inverte o sentido do jogo.
-						mostra_carta(12);								//INTERFACE EXIBE A CARTA ESCOLHIDA
+					case "11": //Inverte o sentido do jogo.
+						mostra_carta(11);								//INTERFACE EXIBE A CARTA ESCOLHIDA
 						await sleep(1000);	
 						if(sentido){
 							sentido=false;
